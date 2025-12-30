@@ -46,3 +46,34 @@ if __name__ == "__main__":
 
     result = evaluate_intent(intent)
     print(json.dumps(result, indent=2))
+
+def enforcement_level(flags):
+    if not flags:
+        return "ALLOW"
+    if "WEAK_SOCIAL_SIGNAL_LEAP" in flags:
+        return "SOFT_BLOCK"
+    if "REPEATED_EXPOSURE_RISK" in flags and "LOW_CONFIDENCE_RECOMMENDATION" in flags:
+        return "SOFT_BLOCK"
+    return "FLAG"
+
+    enforcement = enforcement_level(flags)
+
+    return {
+        "decision": enforcement,
+        "mode": "SHADOW",
+        "policy_version": INTENT_POLICY_VERSION,
+        "risk_flags": flags,
+        "intent_hash": intent_hash
+    }
+
+from abuse_policies import abuse_flags
+
+    abuse = abuse_flags(intent)
+    flags.extend(abuse)
+
+from block_policy import should_hard_block
+
+    if should_hard_block(intent, flags):
+        enforcement = "HARD_BLOCK"
+    else:
+        enforcement = enforcement_level(flags)
