@@ -1,5 +1,5 @@
 import json
-from intent_engine import evaluate_intent
+from engine.intent_engine import evaluate_intent
 
 synthetic_users = [
     ("user_A", "user_B", 0.55, 3, 0),

@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from intent_engine import evaluate_intent
+from engine.intent_engine import evaluate_intent
 
 def compute_trending(intents):
     score = defaultdict(int)
