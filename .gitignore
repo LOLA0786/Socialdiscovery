@@ -6,3 +6,13 @@ dist/
 build/
 .DS_Store
 intent_audit.log
+
+# === UAAL sensitive & generated artifacts ===
+uaal_private_key.pem
+signed_audit_root.json
+intent_audit.log
+uaal_regulator_bundle/
+__pycache__/
+.pytest_cache/
+uaal_public_key.pem
+Socialdiscovery/

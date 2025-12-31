@@ -1,39 +1,56 @@
-from web3 import Web3
-from core.intent_engine import evaluate_intent
-from core.nft_market import trade_intent  # Reuse NFT logic
+import os
+try:
+    from web3 import Web3
+except ImportError:
+    Web3 = None
 
-w3 = Web3(Web3.HTTPProvider('your_infura_url'))  # Or local
+from core.audit_log import append_audit_record
+
+UAAL_MODE = os.getenv("UAAL_MODE", "shadow")  # shadow | enforce
+
 
 class IntentAuction:
-    def __init__(self, contract_address):
-        self.contract = w3.eth.contract(address=contract_address, abi=auction_abi())  # Define ABI
+    def __init__(self, web3_provider=None, intent_evaluator=None):
+        if web3_provider and Web3 is None:
+            raise RuntimeError("Web3 dependency not installed")
 
-    def list_intent(self, seller_id: str, intent_type: str, start_price: int):
-        # Create auction intent
-        auction_intent = {"type": "list_auction", "signals": {"price_velocity": get_price_velocity(seller_id)}}
-        decision = evaluate_intent(auction_intent)
-        if decision['decision'] == 'ALLOW':
-            tx = self.contract.functions.createAuction(intent_type, start_price, seller_id).build_transaction()
-            return w3.eth.send_transaction(tx)
-        return None
+        self.web3 = Web3(web3_provider) if web3_provider else None
+        self.intent_evaluator = intent_evaluator
 
-    def bid_on_intent(self, buyer_id: str, auction_id: int, bid: int):
-        bid_intent = {"type": "bid", "signals": {"bid_velocity": check_bid_spike(buyer_id)}}
-        decision = evaluate_intent(bid_intent)
-        if decision['decision'] == 'ALLOW':
-            return trade_intent(auction_id, buyer_id, bid)  # Reuse trade
-        return None
+    def bid_on_intent(self, intent_payload: dict):
+        decision = {"decision": "ALLOW"}
 
-def get_price_velocity(seller_id):
-    return 1.1  # Mock from analytics
+        if self.intent_evaluator:
+            decision = self.intent_evaluator.evaluate_intent(intent_payload)
 
-def check_bid_spike(buyer_id):
-    return len(get_recent_bids(buyer_id, 3600)) < 5  # Low spike = True
+        audit_id = append_audit_record(
+            intent=intent_payload,
+            decision=decision,
+            mode=UAAL_MODE
+        )
 
-def get_recent_bids(user_id, seconds):
-    return []  # Mock
+        if UAAL_MODE == "enforce" and decision.get("decision") != "ALLOW":
+            return {
+                "status": "BLOCKED",
+                "reason": decision.get("reason", "UAAL policy"),
+                "audit_id": audit_id,
+            }
 
-def auction_abi():
-    return [{"inputs": [...]}]  # Placeholder; use OpenZeppelin ERC721Auction
+        return {
+            "status": "ALLOWED",
+            "audit_id": audit_id,
+            "shadowed": UAAL_MODE == "shadow",
+        }
 
-# Usage: auction = IntentAuction('0x...'); auction.list_intent('seller123', 'premium_hiking_match', 100)
+
+def get_price_velocity(prices):
+    if not prices or len(prices) < 2:
+        return 0.0
+    return (prices[-1] - prices[0]) / len(prices)
+
+
+def check_bid_spike(bids, threshold=2.0):
+    if not bids or len(bids) < 2:
+        return False
+    avg = sum(bids[:-1]) / max(len(bids) - 1, 1)
+    return bids[-1] > avg * threshold
