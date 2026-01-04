@@ -1,97 +1,224 @@
-# SocialDiscovery — Intent-Governed Social Discovery
+# 🚀 SocialDiscovery - Next-Gen Social Media Platform 2026
 
-SocialDiscovery is a privacy-first social discovery system built around **explicit intent**, not followers or engagement metrics.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/typescript-%3E%3D5.0-blue.svg)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org)
 
-## Core Idea
-Every discovery action (recommend, match, trend) is expressed as a **normalized intent** and evaluated by a deterministic policy engine **before execution**.
+A privacy-first, intent-governed social discovery platform with AI-powered recommendations, real-time messaging, and modern UX.
 
-This enables:
-- Replayable decisions
-- Shadow-mode safety
-- Policy-based control
-- Auditability by design
+## ✨ Key Features
 
-## Architecture
-- Intent emission (discovery layer)
-- Intent evaluation (policy engine)
-- Shadow / allow / block modes
-- Tamper-evident audit log
-- Deterministic replay
+### 🎯 Core Features
+- **Intent-Based Discovery**: Every action is governed by explicit intent policies
+- **AI-Powered Feed**: Advanced ML recommendations with diversity enforcement
+- **Real-time Messaging**: WebSocket-based instant messaging with typing indicators
+- **Stories**: 24-hour ephemeral content with view tracking
+- **Live Streaming**: WebRTC-based live video streaming
+- **Advanced Search**: Full-text search powered by Meilisearch
+- **Content Moderation**: AI-powered automated moderation
 
-## Current Status
-- Shadow-mode intent engine
-- Deterministic policy evaluation
-- Replay CLI
-- Synthetic simulation tests
+### 🛡️ Privacy & Security
+- **End-to-End Encryption**: Secure messaging with E2EE
+- **Zero-Knowledge Auth**: Privacy-preserving authentication
+- **GDPR Compliant**: Full data portability and right to be forgotten
+- **Content Warnings**: Customizable content filtering
+- **Advanced Blocking**: Comprehensive blocking and muting system
 
-## Not Yet Included
-- Blocking enforcement (intentional)
-- UI coupling (intent is backend-first)
-- Identity-based heuristics
+### 🤖 AI/ML Features
+- **Personalized Recommendations**: Hybrid content + collaborative filtering
+- **Smart Moderation**: Automated content moderation with ML
+- **Trending Detection**: Real-time trend identification
+- **Sentiment Analysis**: Post and comment sentiment tracking
+- **Image Recognition**: Automated image tagging and NSFW detection
 
-## Philosophy
-> Don’t explain decisions. Prove them.
+### 💎 Modern UX
+- **Glassmorphism UI**: Beautiful, modern design with depth
+- **Dark Mode**: Eye-friendly dark theme
+- **Micro-animations**: Smooth, delightful interactions
+- **Infinite Scroll**: Seamless content loading
+- **PWA Support**: Install as native app
 
-Built for trust, not engagement.
-## SocialDiscovery: Deterministic Discovery Infrastructure
+## 🏗️ Architecture
 
-SocialDiscovery is not a ranking algorithm.
-It is a **policy-driven discovery system** designed to make social recommendation
-**auditable, replayable, and abuse-resilient**.
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ Frontend │────▶│ API Gateway │────▶│ Backend │
+│ (Next.js) │ │ (Nginx) │ │ (Node.js) │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+│
+┌────────────────────────────────────────────────┼────────────────┐
+│ │ │
+┌───────▼────────┐ ┌──────────────┐ ┌────────────────▼──┐ ┌──────────▼───────┐
+│ PostgreSQL │ │ Redis │ │ ML Services │ │ WebSocket │
+│ (Primary DB) │ │ (Cache) │ │ (Python) │ │ (Real-time) │
+└────────────────┘ └──────────────┘ └───────────────────┘ └──────────────────┘
+│ │ │ │
+┌───────▼──────────────┐ │ ┌────────▼────────┐ ┌────────▼─────────┐
+│ Meilisearch │ │ │ Vector DB │ │ RabbitMQ │
+│ (Search Engine) │ │ │ (Qdrant) │ │ (Message Queue)│
+└──────────────────────┘ │ └─────────────────┘ └──────────────────┘
+│
+┌────────▼────────┐
+│ MinIO/S3 │
+│ (Object Store)│
+└─────────────────┘
 
-### Core Principles
+markdown
+Copy code
 
-#### 1. Determinism over heuristics
-Every discovery decision is reproducible from inputs.
-No hidden state. No stochastic ML behavior.
+## 🚀 Quick Start
 
-#### 2. Signals ≠ Decisions
-We strictly separate:
-- **Signals** (velocity, decay, social distance)
-- **Decisions** (ALLOW, SOFT_BLOCK)
+### Prerequisites
+- Node.js 18+
+- Python 3.12+
+- Docker & Docker Compose
+- PostgreSQL 16
+- Redis 7
 
-This prevents over-blocking and enables transparent tuning.
+### Installation
 
-#### 3. Velocity beats identity
-Abuse is detected via **rate-of-change**, not user identity.
-This resists bots, Sybil attacks, and coordinated spam without KYC.
+1. **Clone the repository**
+```bash
+git clone https://github.com/LOLA0786/Socialdiscovery.git
+cd Socialdiscovery
+Install dependencies
 
-#### 4. Warm-up is mandatory
-New content must be allowed to explore.
-Cold-start suppression is treated as a system failure.
+bash
+Copy code
+# Backend
+cd backend
+npm install
 
-#### 5. Replay is a first-class feature
-Every decision can be replayed offline to answer:
-“What did the system know at the time?”
+# Frontend
+cd ../frontend
+npm install
 
----
+# ML Services
+cd ../ml-services
+pip install -r requirements.txt
+Set up environment variables
 
-## Discovery Policy Overview
+bash
+Copy code
+cp .env.example .env
+# Edit .env with your configuration
+Start services with Docker Compose
 
-All discovery decisions flow through a single policy:
+bash
+Copy code
+docker-compose up -d
+Run database migrations
 
-- **Velocity Gate**  
-  Detects unnatural engagement spikes (bot resistance)
+bash
+Copy code
+cd backend
+npx prisma migrate dev
+npx prisma generate
+Start development servers
 
-- **Decay Gate (with warm-up)**  
-  Prevents stale content dominance without killing new posts
+bash
+Copy code
+# Terminal 1: Backend API
+cd backend
+npm run dev
 
-- **Social Distance Signal**  
-  Used for ranking and UI context, never as a hard block
+# Terminal 2: Frontend
+cd frontend
+npm run dev
 
-The unified policy lives in:
-`core/trending_policy.py`
+# Terminal 3: WebSocket Server
+cd backend
+npm run ws:dev
 
----
+# Terminal 4: ML Services
+cd ml-services
+uvicorn main:app --reload
+Access the application
 
-## What This Is (and Isn’t)
+Frontend: http://localhost:3000
 
-✔ Infrastructure for Trust & Safety  
-✔ Deterministic, auditable decision-making  
-✔ Suitable for social, marketplaces, fintech, and ads  
+Backend API: http://localhost:3001
 
-✘ Not a black-box recommender  
-✘ Not engagement-maximizing ML  
-✘ Not identity-based moderation  
+API Docs: http://localhost:3001/api-docs
 
-This system is designed to be *trusted*, not merely effective.
+WebSocket: ws://localhost:3002
+
+ML Services: http://localhost:8000
+
+📚 API Documentation
+Authentication
+Register
+bash
+Copy code
+POST /api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securePassword123",
+  "username": "johndoe",
+  "fullName": "John Doe"
+}
+Login
+bash
+Copy code
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securePassword123"
+}
+Posts
+Create Post
+bash
+Copy code
+POST /api/v1/posts
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "content": "Hello World!",
+  "type": "TEXT",
+  "visibility": "PUBLIC",
+  "hashtags": ["hello", "world"]
+}
+Get Feed
+bash
+Copy code
+GET /api/v1/posts/feed?page=1&limit=20&type=foryou
+Authorization: Bearer <token>
+Full API documentation available at /api-docs when running the server.
+🧪 Testing
+bash
+Copy code
+# Backend tests
+cd backend
+npm test
+npm run test:e2e
+npm run test:coverage
+
+# Frontend tests
+cd frontend
+npm test
+npm run test:coverage
+
+# ML tests
+cd ml-services
+pytest
+pytest --cov
+📦 Deployment
+Docker Production Build
+bash
+Copy code
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+Kubernetes Deployment
+bash
+Copy code
+kubectl apply -f infrastructure/kubernetes/
+kubectl get pods -n socialdiscovery
+📝 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+Made with ❤️ by the SocialDiscovery Team
